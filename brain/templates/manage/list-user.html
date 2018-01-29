@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<section class="content-header">
+    <h1>
+        Usuários
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li>Configuração</li>
+        <li class="active">Usuários</li>
+    </ol>
+</section>
+
+<section class="content">
+
+    <!-- message-processor -->
+
+
+      <!-- Default box -->
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">List</h3>
+
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                    title="Collapse">
+              <i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+              <i class="fa fa-times"></i></button>
+          </div>
+        </div>
+        <div class="box-header" style="width: 150px;">
+        	<a th:href="@{/configuration/developer/form}">
+        	<button type="button" class="btn btn-block btn-primary">New Register</button>
+        	</a>
+        </div>
+        <div class="box-body">
+          <table id="dt_basic" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>E-mail</th>
+                  <th>Status</th>
+                  <th>Organization</th>
+                  <th class="text-center footable-visible footable-last-column">Edit</th>
+                  <th class="text-center footable-visible footable-last-column">Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="developer : ${developers}">
+                	<td th:text="${developer.name}"></td>
+                	<td th:text="${developer.email}"></td>
+                	<td th:text="${developer.active} ? 'active' : 'deactive'"></td>
+                	<td th:text="${developer.organization.name}"></td>
+                	<td class="text-center footable-visible footable-last-column">
+                		<a th:href="@{'/configuration/developer/form/' + ${developer.internal}}">
+                			<button type="button" class="btn bg-navy btn-xs"><i class="fa fa-edit"></i></button>
+                		</a>
+                	</td>
+                	<td class="text-center footable-visible footable-last-column">
+                		<button type="button" class="open-modal btn bg-orange btn-xs" data-toggle="modal"
+                			data-target="#modal-default"  data-internal="" th:attr="data-internal=${developer.internal}"><i class="fa fa-trash-o"></i></button>
+                	</td>
+                </tr>
+                </tbody>
+                <!--
+                <tfoot>
+                <tr>
+                  <th>Rendering engine</th>
+                  <th>Browser</th>
+                  <th>Platform(s)</th>
+                  <th>Engine version</th>
+                  <th>CSS grade</th>
+                </tr>
+                </tfoot>
+                 -->
+              </table>
+        </div>
+        <!-- /.box-body-footer -->
+        <div class="box-footer">
+
+        </div>
+        <!-- /.box-footer-->
+      </div>
+      <!-- /.box -->
+
+    <!-- /.modal -->
+      <div class="modal fade" tabindex="-1" id="modal-default">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Confirmation</h4>
+              </div>
+
+              <form role="form" method="POST" th:action="@{/configuration/developer/delete}">
+	              <div class="modal-body">
+	                <p>Do you really want to delete this record?</p>
+	              </div>
+	              <div class="modal-footer">
+	              	<input type="hidden" name="internal" id="internal" value=""/>
+	                <button type="submit" class="btn btn-primary pull-right" style="width: 100px;">Delete</button>
+	                <button type="button" class="btn btn-default pull-right" data-dismiss="modal" style="width: 100px; margin-right: 5px;">Close</button>
+	              </div>
+              </form>
+
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+
+
+</section>
+
+{% endblock %}
