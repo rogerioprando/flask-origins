@@ -68,5 +68,7 @@ def create_app(mode=None):
     app.register_blueprint(auth)
 
     # REST API section
+    from .views.website_api import website_api
+    app.register_blueprint(website_api)
 
     return app
