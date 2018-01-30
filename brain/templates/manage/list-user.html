@@ -3,24 +3,21 @@
 
 <section class="content-header">
     <h1>
-        Usuários
+        &nbsp;
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="{{ url_for('website.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
         <li>Configuração</li>
         <li class="active">Usuários</li>
     </ol>
 </section>
 
 <section class="content">
+    {% include 'commons/messages.html' %}
 
-    <!-- message-processor -->
-
-
-      <!-- Default box -->
       <div class="box box-info">
         <div class="box-header with-border">
-          <h3 class="box-title">List</h3>
+          <h3 class="box-title">Relação de usuários</h3>
 
           <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
@@ -31,59 +28,54 @@
           </div>
         </div>
         <div class="box-header" style="width: 150px;">
-        	<a th:href="@{/configuration/developer/form}">
-        	<button type="button" class="btn btn-block btn-primary">New Register</button>
+        	<a href="{{ url_for('auth.form_user') }}">
+        	<button type="button" class="btn btn-block btn-primary">Novo Cadastro</button>
         	</a>
         </div>
         <div class="box-body">
           <table id="dt_basic" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th>Name</th>
+                  <th>Nome</th>
                   <th>E-mail</th>
-                  <th>Status</th>
-                  <th>Organization</th>
+                  <th>Acesso Desde</th>
+                  <th>Ativo</th>
+                  <th>Perfil</th>
                   <th class="text-center footable-visible footable-last-column">Edit</th>
                   <th class="text-center footable-visible footable-last-column">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="developer : ${developers}">
-                	<td th:text="${developer.name}"></td>
-                	<td th:text="${developer.email}"></td>
-                	<td th:text="${developer.active} ? 'active' : 'deactive'"></td>
-                	<td th:text="${developer.organization.name}"></td>
+                {% for user in users %}
+                <tr>
+                	<td>{{ user.name }}</td>
+                	<td>{{ user.user_email }}</td>
+                	<td>{{ user.created.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                	<td>{{ 'Ativo' if user.active else 'Inativo' }}</td>
+                    <td>
+                        {% if user.file_name %}
+                            <img src="{{ user.file_url }}" alt="" title=""
+                                style="width: 56px; height: 56px; border: 1px solid #ddd;">
+                        {% endif %}
+                    </td>
                 	<td class="text-center footable-visible footable-last-column">
-                		<a th:href="@{'/configuration/developer/form/' + ${developer.internal}}">
+                		<a href="{{ url_for('auth.edit_user', internal=user.internal) }}">
                 			<button type="button" class="btn bg-navy btn-xs"><i class="fa fa-edit"></i></button>
                 		</a>
                 	</td>
                 	<td class="text-center footable-visible footable-last-column">
-                		<button type="button" class="open-modal btn bg-orange btn-xs" data-toggle="modal"
-                			data-target="#modal-default"  data-internal="" th:attr="data-internal=${developer.internal}"><i class="fa fa-trash-o"></i></button>
+                		<button type="button" class="open-modal btn btn-danger btn-xs" data-toggle="modal"
+                			data-target="#modal-default"  data-id="{{ user.internal }}"><i class="fa fa-trash-o"></i></button>
                 	</td>
                 </tr>
+                {% endfor %}
                 </tbody>
-                <!--
-                <tfoot>
-                <tr>
-                  <th>Rendering engine</th>
-                  <th>Browser</th>
-                  <th>Platform(s)</th>
-                  <th>Engine version</th>
-                  <th>CSS grade</th>
-                </tr>
-                </tfoot>
-                 -->
               </table>
         </div>
-        <!-- /.box-body-footer -->
         <div class="box-footer">
 
         </div>
-        <!-- /.box-footer-->
       </div>
-      <!-- /.box -->
 
     <!-- /.modal -->
       <div class="modal fade" tabindex="-1" id="modal-default">
@@ -95,23 +87,19 @@
                 <h4 class="modal-title">Confirmation</h4>
               </div>
 
-              <form role="form" method="POST" th:action="@{/configuration/developer/delete}">
+              <form role="form" method="POST" action="{{ url_for('auth.delete_user') }}">
 	              <div class="modal-body">
-	                <p>Do you really want to delete this record?</p>
+	                <p>Deseja realmente <strong>deletar o registro?</strong></p>
 	              </div>
 	              <div class="modal-footer">
-	              	<input type="hidden" name="internal" id="internal" value=""/>
-	                <button type="submit" class="btn btn-primary pull-right" style="width: 100px;">Delete</button>
-	                <button type="button" class="btn btn-default pull-right" data-dismiss="modal" style="width: 100px; margin-right: 5px;">Close</button>
+	              	<input type="hidden" id="recordId" name="recordId">
+	                <button type="submit" class="btn btn-danger pull-right" style="width: 100px;"><i class="fa fa-trash-o"></i>&nbsp;Deletar</button>
+	                <button type="button" class="btn btn-default pull-right" data-dismiss="modal" style="width: 100px; margin-right: 5px;"><i class="fa fa-times"></i>&nbsp;Cancelar</button>
 	              </div>
               </form>
-
             </div>
-            <!-- /.modal-content -->
           </div>
-          <!-- /.modal-dialog -->
         </div>
-
 
 </section>
 

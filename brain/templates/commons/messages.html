@@ -1,0 +1,35 @@
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% if error_type == 'message' %}
+            <div class="alert alert-success alert-dismissable">
+        {% elif error_type == 'error' %}
+            <div class="alert alert-danger alert-dismissable">
+        {% elif error_type == 'error_file' %}
+            <div class="alert alert-danger alert-dismissable">
+        {% elif error_type == 'error_email' %}
+            <div class="alert alert-danger alert-dismissable">
+        {% elif error_type == 'warning' %}
+            <div class="alert alert-warning alert-dismissable">
+        {% else %}
+            <div class="alert alert-info alert-dismissable">
+        {% endif %}
+            {% for message in messages %}
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+
+
+{# -- generic block commented
+{% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
+#}

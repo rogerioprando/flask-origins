@@ -1,6 +1,7 @@
 import uuid
 
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
+from flask_login import login_required
 
 website = Blueprint('website', __name__)
 
@@ -27,5 +28,6 @@ def unhandled_exception(e):
 
 
 @website.route('/')
+@login_required
 def index():
     return render_template('website/index.html')

@@ -18,7 +18,7 @@ SQLALCHEMY_ECHO = True
 USE_RELOADER = True
 
 RUN_HOST = '0.0.0.0'
-RUN_PORT = int(os.environ.get('PORT', 8008))
+RUN_PORT = int(os.environ.get('PORT', 8000))
 
 # grab the folder of the top-level directory of this project
 BASEDIR = os.path.abspath(os.path.dirname(__file__))

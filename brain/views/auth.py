@@ -2,7 +2,7 @@ import uuid
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
 from flask_login import login_required, login_user, logout_user, current_user
-from ..forms import LoginForm
+from ..forms import LoginForm, UserForm, UserEditForm, UserChangePasswordForm, AuthApiForm
 from ..models import User, AuthApi, LoginActivity
 from ..application import db, f_images
 from ..util.library import generate_secret_key, s3_upload
@@ -53,7 +53,7 @@ def login():
             record_login_activity(user, 'login')
 
             # redirect to dashboard after login
-            return redirect(next_url or url_for('main.index'))
+            return redirect(next_url or url_for('website.index'))
         else:
             flash(u'E-mail ou senha incorretos.')
             error_type = 'error'
@@ -96,7 +96,7 @@ def record_login_activity(user, action):
 
 
 @auth.route('/manage/client-secret', methods=['GET'])
-# @login_required
+@login_required
 def list_client_secrets():
     clients = AuthApi.query.all()
     error_type = 'info'
@@ -173,16 +173,13 @@ def delete_client_secret():
 
 
 @auth.route('/manage/user', methods=['GET'])
-# @login_required
+@login_required
 def list_users():
     users = User.query.all()
     error_type = 'info'
 
     return render_template('manage/list-user.html',
                            users=users, error_type=error_type)
-
-
-from werkzeug.utils import secure_filename
 
 
 @auth.route('/manage/user/form', methods=['GET', 'POST'])

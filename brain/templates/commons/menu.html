@@ -3,11 +3,27 @@
     <section class="sidebar">
         <div class="user-panel">
             <div class="pull-left image">
-              <img src="{{ url_for('static', filename='dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
+                {% if current_user.file_name %}
+				    <img src="{{ current_user.file_url }}" alt="{{ current_user.name }}" class="img-circle" />
+				{% else %}
+				    <img src="{{ url_for('static', filename='dist/img/default-profile.jpg') }}" alt="{{ current_user.name }}" class="img-circle" />
+				{% endif %}
             </div>
             <div class="pull-left info">
-              <p>Alexander Pierce</p>
-              <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+              <p>
+                  {% if current_user.is_authenticated %}
+				    {{ current_user.name }}
+				  {% endif %}
+              </p>
+              <a href="#"><i class="fa fa-circle-o text-yellow"></i>
+                {% if current_user.is_authenticated %}
+				  {% if current_user.company %}
+                    {{ current_user.company }}
+                  {% else %}
+                    Online
+                  {% endif %}
+				{% endif %}
+              </a>
             </div>
         </div>
 

@@ -92,6 +92,14 @@
   $(document).ready(function () {
     $('.sidebar-menu').tree()
   });
+
+   $(document).on("click", ".open-modal", function () {
+                var recordId = $(this).data('id');
+                var recordStatus = $(this).data('status');
+
+                $(".modal-footer #recordId").val(recordId);
+                $(".modal-footer #recordStatus").val(recordStatus);
+		    });
 </script>
 
 </body>
