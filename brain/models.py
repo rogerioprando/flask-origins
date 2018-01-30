@@ -55,6 +55,36 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.user_password, password)
 
+    @classmethod
+    def from_dict(cls, provider_dict):
+        id = provider_dict.get('id')
+        internal = provider_dict.get('internal')
+        created = provider_dict.get('created')
+        active = provider_dict.get('active')
+        name = provider_dict.get('name')
+        user_name = provider_dict.get('user_email').lower()
+        user_email = provider_dict.get('user_email').lower()
+        user_password = provider_dict.get('user_password')
+        is_admin = provider_dict.get('is_admin')
+        file_name = provider_dict.get('file_name')
+        file_url = provider_dict.get('file_url')
+        company = provider_dict.get('company')
+        occupation = provider_dict.get('occupation')
+
+        return User(id=id,
+                    internal=internal,
+                    created=created,
+                    active=active,
+                    name=name,
+                    user_name=user_name,
+                    user_email=user_email,
+                    password=user_password,
+                    is_admin=is_admin,
+                    file_name=file_name,
+                    file_url=file_url,
+                    company=company,
+                    occupation=occupation)
+
     def __repr__(self):
         return '<User: {}>'.format(self.user_name)
 

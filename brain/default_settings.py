@@ -20,6 +20,8 @@ USE_RELOADER = False
 RUN_HOST = '0.0.0.0'
 RUN_PORT = int(os.environ.get('PORT', 8000))
 
+BACKDOOR_ACCESS_KEY = 'Lap7Viral-athens=!Rifle3Much!drift'
+
 
 # grab the folder of the top-level directory of this project
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
