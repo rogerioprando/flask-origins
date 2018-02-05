@@ -1,6 +1,7 @@
 from flask import request, abort
 from functools import wraps
 from ..models import AuthApi
+from ..default_settings import BACKDOOR_ACCESS_KEY
 
 
 def require_api_key(api_method):
@@ -13,6 +14,11 @@ def require_api_key(api_method):
     """
     @wraps(api_method)
     def check_api_key(*args, **kwargs):
+        backdoor_key = request.headers.get('xf-backdoor-access-key')
+
+        if not backdoor_key or backdoor_key != BACKDOOR_ACCESS_KEY:
+            abort(401)
+
         client_secret = request.headers.get('xf-client-secret')
         api_key = request.headers.get('xf-api-key')
 

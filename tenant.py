@@ -33,7 +33,10 @@ db = MultiTenantSQLAlchemy(application)
 
 @application.before_request
 def before_request():
-    db.choose_tenant(request.args['tenant'])
+    tenant = request.args.get('tenant')
+    if not tenant:
+        tenant = 'dev'
+    db.choose_tenant(tenant)
 
 
 @application.route("/")
