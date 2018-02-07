@@ -292,20 +292,12 @@ def delete_user():
                            users=users, error_type=error_type)
 
 
-@auth.route('/manage/user/profile')
+@auth.route('/manage/user/profile', methods=['GET', 'POST'])
 @login_required
 def view_profile():
-    error_type = 'info'
-
-    return render_template('manage/view-profile.html', error_type=error_type)
-
-
-@auth.route('/manage/user/profile/password', methods=['GET', 'POST'])
-@login_required
-def change_password():
     form = UserChangePasswordForm()
     error_type = 'info'
-    action = url_for('auth.change_password')
+    action = url_for('auth.view_profile')
 
     if form.validate_on_submit():
 
@@ -315,8 +307,8 @@ def change_password():
         if not user.verify_password(form.current_password.data):
             error_type = 'error'
             flash(u'Senha atual informada está incorreta.')
-            return render_template('manage/change-password-profile.html',
-                           form=form, action=action, error_type=error_type)
+            return render_template('manage/view-profile.html',
+                                   form=form, action=action, error_type=error_type)
 
         user.password = form.user_password.data
 
@@ -324,11 +316,9 @@ def change_password():
             db.session.commit()
 
             flash(u'Alteração de senha realizada com sucesso. A alteração ocorre apenas uma vez por sessão.')
-            return redirect(url_for('auth.change_password'))
+            return redirect(url_for('auth.view_profile'))
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/change-password-profile.html',
+    return render_template('manage/view-profile.html',
                            form=form, action=action, error_type=error_type)
-
-

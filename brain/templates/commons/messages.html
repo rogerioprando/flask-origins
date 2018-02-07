@@ -11,7 +11,7 @@
         {% elif error_type == 'warning' %}
             <div class="alert alert-warning alert-dismissable">
         {% else %}
-            <div class="alert alert-info alert-dismissable">
+            <div class="alert bg-light-blue alert-dismissable">
         {% endif %}
             {% for message in messages %}
             <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button> {{ message }}

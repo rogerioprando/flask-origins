@@ -18,9 +18,9 @@
                 <a href="#"><i class="fa fa-circle-o text-yellow"></i>
                     {% if current_user.is_authenticated %}
 				        {% if current_user.company %}
-                            {{ current_user.company }}
+                            {{ current_user.occupation }}
                         {% else %}
-                            Online
+                            {{ current_user.company }}
                         {% endif %}
 				    {% endif %}
                 </a>
@@ -48,7 +48,7 @@
             </li>
             <li {% if request.endpoint.endswith(('list_users', 'form_user', 'edit_user', 'list_client_secrets', 'form_client_secret', 'edit_client_secret')) %} class="treeview active menu-open" {% else %} class="treeview" {% endif %}>
                 <a href="#">
-                    <i class="fa fa-dashboard"></i> <span>Configuração</span>
+                    <i class="fa fa-laptop"></i> <span>Configuração</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
