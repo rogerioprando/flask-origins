@@ -1,6 +1,4 @@
-
 from .application import ma
-from marshmallow import fields
 
 
 class UserSchema(ma.Schema):

@@ -20,6 +20,7 @@ class LoginActivity(db.Model):
     internal = db.Column(db.String(200), primary_key=True, default=uuid.uuid4())
     created = db.Column(db.DateTime, default=datetime.utcnow())
     user_id = db.Column(db.Integer, db.ForeignKey('xf_user.id'))
+    user = db.relationship('User', backref=db.backref('activities', cascade='all, delete-orphan'), lazy='joined')
     action = db.Column(db.String(), nullable=False)
     ip_address = db.Column(db.String(), nullable=False)
     ua_header = db.Column(db.String(), nullable=False)

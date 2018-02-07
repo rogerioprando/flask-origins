@@ -32,7 +32,21 @@ def get_users():
     r_users = user_schema.dump(users, many=True)
     return jsonify(r_users.data)
 
+"""
+payload for persistence
 
+{
+    "active": true,
+    "company": "Linux Foundation",
+    "created": "2018-01-30T11:33:03.309602+00:00",
+    "is_admin": false,
+    "occupation": "Sr Software Engineer",
+    "name": "Alan Cox",
+    "user_email": "alan.cox@linux.org",
+    "user_password": "123"
+}
+
+"""
 @website_api.route('/users', methods=['POST'])
 def persist_user():
     backdoor_key = request.headers.get('xf-backdoor-access-key')

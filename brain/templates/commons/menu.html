@@ -10,33 +10,33 @@
 				{% endif %}
             </div>
             <div class="pull-left info">
-              <p>
-                  {% if current_user.is_authenticated %}
-				    {{ current_user.name }}
-				  {% endif %}
-              </p>
-              <a href="#"><i class="fa fa-circle-o text-yellow"></i>
-                {% if current_user.is_authenticated %}
-				  {% if current_user.company %}
-                    {{ current_user.company }}
-                  {% else %}
-                    Online
-                  {% endif %}
-				{% endif %}
-              </a>
+                <p>
+                    {% if current_user.is_authenticated %}
+				        {{ current_user.name }}
+				    {% endif %}
+                </p>
+                <a href="#"><i class="fa fa-circle-o text-yellow"></i>
+                    {% if current_user.is_authenticated %}
+				        {% if current_user.company %}
+                            {{ current_user.company }}
+                        {% else %}
+                            Online
+                        {% endif %}
+				    {% endif %}
+                </a>
             </div>
         </div>
 
+        {#
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                      <i class="fa fa-search"></i>
-                    </button>
+                <input type="text" name="q" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
                   </span>
             </div>
         </form>
+        #}
 
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
