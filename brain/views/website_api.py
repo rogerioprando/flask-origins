@@ -1,4 +1,5 @@
 import uuid
+import logging
 
 from flask import Blueprint, jsonify, request, abort
 from ..util.decorators import require_api_key
@@ -41,12 +42,11 @@ def persist_user():
     {
         "active": true,
         "company": "Linux Foundation",
-        "created": "2018-01-30T11:33:03.309602+00:00",
         "is_admin": false,
-        "occupation": "Sr Software Engineer",
+        "occupation": "Software Engineer",
         "name": "Alan Cox",
         "user_email": "alan.cox@linux.org",
-        "user_password": "123"
+        "user_password": "linux123"
     }
 
     """
@@ -82,6 +82,7 @@ def persist_user():
             response = build_message(success=True, status_code=201, message='persisted')
             return response
         except Exception as e:
+            logging.error('Exception: {}'.format(e))
             abort(500, e)
 
     return build_message(success=False, status_code=404, message='not found')

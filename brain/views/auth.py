@@ -237,8 +237,8 @@ def edit_user(internal):
     error_type = 'info'
     action = url_for('auth.edit_user', internal=internal)
 
-    file_name = user.file_name
-    file_url = user.file_url
+    file_name = user.file_name if user else ''
+    file_url = user.file_url if user else ''
 
     if form.validate_on_submit():
 

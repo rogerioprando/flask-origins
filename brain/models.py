@@ -3,12 +3,13 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from .application import db, login_manager
 from flask_uuid import uuid
+from sqlalchemy_utils import UUIDType
 
 
 class AuthApi(db.Model):
     __tablename__ = 'xf_auth_api'
 
-    internal = db.Column(db.String(200), primary_key=True, default=uuid.uuid4())
+    internal = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4())
     created = db.Column(db.DateTime, default=datetime.utcnow())
     client_secret = db.Column(db.String(), nullable=False, unique=True)
     api_key = db.Column(db.String(), nullable=False, unique=True)
@@ -17,7 +18,7 @@ class AuthApi(db.Model):
 class LoginActivity(db.Model):
     __tablename__ = 'xf_login_activities'
 
-    internal = db.Column(db.String(200), primary_key=True, default=uuid.uuid4())
+    internal = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4())
     created = db.Column(db.DateTime, default=datetime.utcnow())
     user_id = db.Column(db.Integer, db.ForeignKey('xf_user.id'))
     user = db.relationship('User', backref=db.backref('activities', cascade='all, delete-orphan'), lazy='joined')
@@ -29,9 +30,10 @@ class LoginActivity(db.Model):
 
 class User(UserMixin, db.Model):
     __tablename__ = 'xf_user'
+    __table_args__ = {'sqlite_autoincrement': True}
 
     id = db.Column(db.Integer, primary_key=True)
-    internal = db.Column(db.String(200), index=True, unique=True, default=uuid.uuid4())
+    internal = db.Column(UUIDType(binary=False), index=True, unique=True, default=uuid.uuid4())
     created = db.Column(db.DateTime, default=datetime.utcnow)
     active = db.Column(db.Boolean, nullable=False, default=False)
     name = db.Column(db.String(200), nullable=False)

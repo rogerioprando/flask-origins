@@ -7,9 +7,11 @@ from flask_login import LoginManager
 from flask_uuid import FlaskUUID
 from flask_marshmallow import Marshmallow
 from flask_uploads import UploadSet, IMAGES, configure_uploads
+from flask_migrate import Migrate
 
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -47,6 +49,8 @@ def create_app(mode=None):
         app.config.from_object('brain.default_settings')
 
     db.init_app(app)
+    migrate.init_app(app, db)
+
     login_manager.init_app(app)
     flask_uuid.init_app(app)
     ma.init_app(app)
