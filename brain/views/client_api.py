@@ -37,8 +37,8 @@ class IntegrationResource(object):
     def post(self, data=None, **kwargs):
         try:
             result = []
-            r = requests.post(url=self.url, json=data, headers=API_HEADERS, allow_redirects=False,
-                              timeout=API_TIMEOUT, verify=False, **kwargs)
+            r = requests.post(url=self.url, data=data, headers=API_HEADERS,
+                              allow_redirects=False, verify=False, **kwargs)
             r.raise_for_status()
 
             if r.content:
@@ -55,8 +55,8 @@ class IntegrationResource(object):
     def put(self, data=None, **kwargs):
         try:
             result = []
-            r = requests.put(url=self.url, json=data, headers=API_HEADERS, allow_redirects=False,
-                             timeout=API_TIMEOUT, verify=False, **kwargs)
+            r = requests.put(url=self.url, data=data, headers=API_HEADERS,
+                             allow_redirects=False, verify=False, **kwargs)
             r.raise_for_status()
 
             if r.content:
@@ -73,8 +73,8 @@ class IntegrationResource(object):
     def delete(self, data=None, **kwargs):
         try:
             result = []
-            r = requests.delete(url=self.url, json=data, headers=API_HEADERS, allow_redirects=False,
-                                timeout=API_TIMEOUT, verify=False, **kwargs)
+            r = requests.delete(url=self.url, data=data, headers=API_HEADERS,
+                                allow_redirects=False, verify=False, **kwargs)
             r.raise_for_status()
 
             if r.content:
