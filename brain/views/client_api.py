@@ -1,6 +1,8 @@
 import json
 import requests
-import logging
+
+from flask import current_app as app
+
 
 API_BASE_URL = 'http://0.0.0.0:9000'
 API_TIMEOUT = 120
@@ -26,11 +28,11 @@ class IntegrationResource(object):
             if r.content:
                 result = json.loads(r.content.decode('utf-8'))
         except requests.exceptions.Timeout as e:
-            logging.error('Timeout Exception: {}'.format(e))
+            app.logger.error('Timeout Exception: {}'.format(e))
         except requests.exceptions.HTTPError as e:
-            logging.error('HTTP Error Exception: {}'.format(e))
+            app.logger.error('HTTP Error Exception: {}'.format(e))
         except (requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-            logging.error('Request Exception: {}'.format(e))
+            app.logger.error('Request Exception: {}'.format(e))
 
         return result
 
@@ -47,11 +49,11 @@ class IntegrationResource(object):
             if r.content:
                 result = json.loads(r.content.decode('utf-8'))
         except requests.exceptions.Timeout as e:
-            logging.error('Timeout Exception: {}'.format(e))
+            app.logger.error('Timeout Exception: {}'.format(e))
         except requests.exceptions.HTTPError as e:
-            logging.error('HTTP Error Exception: {}'.format(e))
+            app.logger.error('HTTP Error Exception: {}'.format(e))
         except (requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-            logging.error('Request Exception: {}'.format(e))
+            app.logger.error('Request Exception: {}'.format(e))
 
         return result
 
@@ -68,11 +70,11 @@ class IntegrationResource(object):
             if r.content:
                 result = json.loads(r.content.decode('utf-8'))
         except requests.exceptions.Timeout as e:
-            logging.error('Timeout Exception: {}'.format(e))
+            app.logger.error('Timeout Exception: {}'.format(e))
         except requests.exceptions.HTTPError as e:
-            logging.error('HTTP Error Exception: {}'.format(e))
+            app.logger.error('HTTP Error Exception: {}'.format(e))
         except (requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-            logging.error('Request Exception: {}'.format(e))
+            app.logger.error('Request Exception: {}'.format(e))
 
         return result
 
@@ -89,10 +91,10 @@ class IntegrationResource(object):
             if r.content:
                 result = json.loads(r.content.decode('utf-8'))
         except requests.exceptions.Timeout as e:
-            logging.error('Timeout Exception: {}'.format(e))
+            app.logger.error('Timeout Exception: {}'.format(e))
         except requests.exceptions.HTTPError as e:
-            logging.error('HTTP Error Exception: {}'.format(e))
+            app.logger.error('HTTP Error Exception: {}'.format(e))
         except (requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-            logging.error('Request Exception: {}'.format(e))
+            app.logger.error('Request Exception: {}'.format(e))
 
         return result

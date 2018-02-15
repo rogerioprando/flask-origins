@@ -16,7 +16,7 @@ TEMPLATES_AUTO_RELOAD = True
 
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOGGING_LOCATION = 'origins.log'
-LOGGING_LEVEL = logging.CRITICAL
+LOGGING_LEVEL = logging.DEBUG
 
 DEBUG = False
 SQLALCHEMY_ECHO = False

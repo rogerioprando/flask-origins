@@ -1,5 +1,4 @@
 import uuid
-import logging
 
 from flask import Blueprint, jsonify, request, abort
 from ..util.decorators import require_api_key
