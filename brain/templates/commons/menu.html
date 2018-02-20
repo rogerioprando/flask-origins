@@ -67,6 +67,20 @@
                     </li>
                 </ul>
             </li>
+
+            <li {% if request.endpoint.endswith(('list_clients', 'form_client', 'edit_client')) %} class="treeview active menu-open" {% else %} class="treeview" {% endif %}>
+                <a href="#">
+                    <i class="fa fa-table"></i> <span>Parametrização</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li {% if request.endpoint.endswith(('list_clients', 'form_client', 'edit_client')) %} class="active" {% endif %}>
+                        <a href="{{ url_for('parameter.list_clients') }}"><i class="fa fa-circle-o"></i> Controle de Cliente</a>
+                    </li>
+                </ul>
+            </li>
             {#
             <!--
             <li class="treeview">

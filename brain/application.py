@@ -71,6 +71,9 @@ def create_app(mode=None):
     from .views.auth import auth
     app.register_blueprint(auth)
 
+    from .views.parameter import parameter
+    app.register_blueprint(parameter)
+
     # REST API section
     from .views.website_api import website_api
     app.register_blueprint(website_api)

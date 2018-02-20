@@ -5,7 +5,7 @@ from wtforms import PasswordField, StringField, ValidationError, SelectMultipleF
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from flask_wtf.file import FileRequired, FileAllowed
 from .application import f_images
-from .models import AuthApi, User, UserGroup
+from .models import AuthApi, User, UserGroup, State
 from brazilnum import cnpj, cpf
 
 
