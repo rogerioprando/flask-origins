@@ -28,6 +28,7 @@ RUN_HOST = '0.0.0.0'
 RUN_PORT = int(os.environ.get('PORT', 8000))
 
 BACKDOOR_ACCESS_KEY = 'Lap7Viral-athens=!Rifle3Much!drift'
+PROVIDER_SIGNATURE = 'T41$TZ^#QGvi34mnm!wQjYL0vk!3wCL%'
 
 
 # grab the folder of the top-level directory of this project
