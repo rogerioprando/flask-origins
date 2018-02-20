@@ -2,8 +2,8 @@ import uuid
 
 from flask import Blueprint, render_template, flash, redirect, url_for, request, abort, session
 from flask_login import login_required, login_user, logout_user, current_user
-from ..forms import LoginForm, UserForm, UserEditForm, UserChangePasswordForm, AuthApiForm
-from ..models import User, AuthApi, LoginActivity
+from ..forms import LoginForm, UserForm, UserEditForm, UserChangePasswordForm, AuthApiForm, UserGroupForm
+from ..models import User, AuthApi, LoginActivity, UserGroup
 from ..application import db, f_images
 from ..util.library import generate_secret_key, s3_upload
 from user_agents import parse
@@ -210,7 +210,7 @@ def form_user():
                     user_name=form.user_email.data,
                     user_email=form.user_email.data.lower(),
                     password=form.user_password.data,
-                    is_admin=form.is_admin.data,
+                    user_group_id=form.groups.data,
                     file_name=file_name,
                     file_url=file_url,
                     company=form.company.data,
@@ -234,7 +234,7 @@ def form_user():
 @login_required
 def edit_user(internal):
     user = User.query.filter_by(internal=internal).first()
-    form = UserEditForm(obj=user)
+    form = UserEditForm(obj=user, groups=user.user_group_id)
     error_type = 'info'
     action = url_for('auth.edit_user', internal=internal)
 
@@ -258,7 +258,7 @@ def edit_user(internal):
         user.company = form.company.data
         user.occupation = form.occupation.data
         user.active = form.active.data
-        user.is_admin = form.is_admin.data
+        user.user_group_id = form.groups.data
 
         try:
             db.session.commit()
@@ -323,3 +323,81 @@ def view_profile():
 
     return render_template('manage/view-profile.html',
                            form=form, action=action, error_type=error_type)
+
+
+@auth.route('/manage/group')
+@login_required
+def list_groups():
+    groups = UserGroup.query.all()
+    error_type = 'info'
+
+    return render_template('manage/list-group.html',
+                           groups=groups, error_type=error_type)
+
+
+@auth.route('/manage/group/form', methods=['GET', 'POST'])
+@login_required
+def form_group():
+    form = UserGroupForm()
+    error_type = 'info'
+    action = url_for('auth.form_group')
+
+    if form.validate_on_submit():
+        group = UserGroup(name=form.name.data,
+                          type=form.type.data,
+                          description=form.description.data,
+                          internal=form.internal.data or uuid.uuid4())
+
+        try:
+            db.session.add(group)
+            db.session.commit()
+
+            return redirect(url_for('auth.list_groups'))
+        except Exception as e:
+            abort(500, e)
+
+    return render_template('manage/form-group.html',
+                           form=form, action=action, error_type=error_type)
+
+
+@auth.route('/manage/group/<uuid:internal>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_group(internal):
+    group = UserGroup.query.filter_by(internal=internal).first()
+    form = UserGroupForm(obj=group)
+    error_type = 'info'
+    action = url_for('auth.edit_group', internal=internal)
+
+    if form.validate_on_submit():
+        group.name = form.name.data
+        group.description = form.description.data
+
+        try:
+            db.session.commit()
+
+            return redirect(url_for('auth.list_groups'))
+        except Exception as e:
+            abort(500, e)
+
+    return render_template('manage/form-group.html',
+                           form=form, action=action, error_type=error_type)
+
+
+@auth.route('/manage/group/delete', methods=['POST'])
+@login_required
+def delete_group():
+    groups = UserGroup.query.all()
+    error_type = 'info'
+
+    try:
+        group = UserGroup.query.filter_by(internal=request.form['recordId']).first()
+        db.session.delete(group)
+        db.session.commit()
+
+        flash(u'Registro deletado com sucesso.')
+        return redirect(url_for('auth.list_groups'))
+    except Exception as e:
+        abort(500, e)
+
+    return render_template('manage/list-group.html',
+                           groups=groups, error_type=error_type)

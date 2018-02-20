@@ -46,7 +46,9 @@
                     <i class="fa fa-th"></i> <span>Página Inicial</span>
                 </a>
             </li>
-            <li {% if request.endpoint.endswith(('list_users', 'form_user', 'edit_user', 'list_client_secrets', 'form_client_secret', 'edit_client_secret')) %} class="treeview active menu-open" {% else %} class="treeview" {% endif %}>
+            <li {% if request.endpoint.endswith(('list_users', 'form_user', 'edit_user',
+                                                'list_client_secrets', 'form_client_secret', 'edit_client_secret',
+                                                'list_groups', 'form_group', 'edit_group')) %} class="treeview active menu-open" {% else %} class="treeview" {% endif %}>
                 <a href="#">
                     <i class="fa fa-laptop"></i> <span>Configuração</span>
                     <span class="pull-right-container">
@@ -54,6 +56,9 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
+                    <li {% if request.endpoint.endswith(('list_groups', 'form_group', 'edit_group')) %} class="active" {% endif %}>
+                        <a href="{{ url_for('auth.list_groups') }}"><i class="fa fa-circle-o"></i> Grupo de Acesso</a>
+                    </li>
                     <li {% if request.endpoint.endswith(('list_users', 'form_user', 'edit_user')) %} class="active" {% endif %}>
                         <a href="{{ url_for('auth.list_users') }}"><i class="fa fa-circle-o"></i> Usuários</a>
                     </li>

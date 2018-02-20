@@ -41,11 +41,11 @@ def persist_user():
     {
         "active": true,
         "company": "Linux Foundation",
-        "is_admin": false,
         "occupation": "Software Engineer",
         "name": "Alan Cox",
         "user_email": "alan.cox@linux.org",
-        "user_password": "linux123"
+        "user_password": "linux123",
+        "group_id": 1
     }
 
     """
@@ -84,4 +84,4 @@ def persist_user():
             logging.error('Exception: {}'.format(e))
             abort(500, e)
 
-    return build_message(success=False, status_code=404, message='not found')
+    return build_message(success=False, status_code=403, message='forbidden')

@@ -6,6 +6,33 @@ from flask_uuid import uuid
 from sqlalchemy_utils import UUIDType
 
 
+class Client(db.Model):
+    __tablename__ = 'xf_client_global'
+
+    id = db.Column(db.Integer, primary_key=True)
+    internal = db.Column(UUIDType(binary=False), index=True, unique=True, default=uuid.uuid4())
+    created = db.Column(db.DateTime, default=datetime.utcnow)
+    name = db.Column(db.String(200), nullable=False)
+    document_main = db.Column(db.String(20), nullable=False)
+    address_street = db.Column(db.String(250))
+    address_complement = db.Column(db.String(200))
+    address_zip = db.Column(db.String(10))
+    address_district = db.Column(db.String(100))
+    address_city = db.Column(db.String(100))
+    address_state = db.Column(db.String(2))
+    date_start = db.Column(db.Date, nullable=False, default=datetime.utcnow())
+    date_end = db.Column(db.Date, nullable=False, default=datetime.utcnow())
+
+
+class State(db.Model):
+    __tablename__ = 'xf_state'
+
+    initials = db.Column(db.String(2), primary_key=True)
+    state = db.Column(db.String(100), nullable=False)
+    capital = db.Column(db.String(100), nullable=False)
+    region = db.Column(db.String(100), nullable=False)
+
+
 class AuthApi(db.Model):
     __tablename__ = 'xf_auth_api'
 
@@ -28,6 +55,18 @@ class LoginActivity(db.Model):
     ua_device = db.Column(db.String(), nullable=False)
 
 
+class UserGroup(db.Model):
+    __tablename__ = 'xf_user_group'
+
+    id = db.Column(db.Integer, primary_key=True)
+    internal = db.Column(UUIDType(binary=False), index=True, unique=True, default=uuid.uuid4())
+    created = db.Column(db.DateTime, default=datetime.utcnow)
+    name = db.Column(db.String(200), nullable=False)
+    type = db.Column(db.String(3), nullable=False, unique=True)
+    description = db.Column(db.String(200))
+    users = db.relationship('User', backref='group', lazy=True)
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'xf_user'
     __table_args__ = {'sqlite_autoincrement': True}
@@ -40,11 +79,11 @@ class User(UserMixin, db.Model):
     user_name = db.Column(db.String(100), index=True, unique=True)
     user_email = db.Column(db.String(200), index=True, unique=True)
     user_password = db.Column(db.String(200), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
     file_name = db.Column(db.String())
     file_url = db.Column(db.String())
     company = db.Column(db.String())
     occupation = db.Column(db.String())
+    user_group_id = db.Column(db.Integer, db.ForeignKey('xf_user_group.id'))
 
     @property
     def password(self):
@@ -68,7 +107,7 @@ class User(UserMixin, db.Model):
         user_name = provider_dict.get('user_email').lower()
         user_email = provider_dict.get('user_email').lower()
         user_password = provider_dict.get('user_password')
-        is_admin = provider_dict.get('is_admin')
+        user_group_id = provider_dict.get('group_id')
         file_name = provider_dict.get('file_name')
         file_url = provider_dict.get('file_url')
         company = provider_dict.get('company')
@@ -82,7 +121,7 @@ class User(UserMixin, db.Model):
                     user_name=user_name,
                     user_email=user_email,
                     password=user_password,
-                    is_admin=is_admin,
+                    user_group_id=user_group_id,
                     file_name=file_name,
                     file_url=file_url,
                     company=company,
