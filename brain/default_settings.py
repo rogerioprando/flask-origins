@@ -1,13 +1,15 @@
 import os
 import logging
+import datetime
+
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 APP_DIR = os.path.abspath(os.curdir)
 
 SECRET_KEY = 'Rest&gaze=Music-tin-falcon!bunk'
-# SQLALCHEMY_DATABASE_URI = 'postgresql://origins:origins@localhost:5432/dev_origins'
+SQLALCHEMY_DATABASE_URI = 'postgresql://origins:origins@localhost:5432/dev_origins'
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(APP_DIR, 'origins.db')
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(APP_DIR, 'origins.db')
 
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'career5Why+Glossy=When7Stereo4accept'
@@ -34,3 +36,6 @@ UPLOADS_DEFAULT_URL = 'http://{}:{}/{}'.format(RUN_HOST, RUN_PORT, 'static/uploa
 
 UPLOADED_IMAGES_DEST = APP_DIR + '/brain/static/uploads/images/'
 UPLOADED_IMAGES_URL = 'http://{}:{}/{}'.format(RUN_HOST, RUN_PORT, 'static/uploads/images/')
+
+REMEMBER_COOKIE_DURATION = datetime.timedelta(minutes=2)
+PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=45)

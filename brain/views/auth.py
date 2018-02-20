@@ -1,6 +1,6 @@
 import uuid
 
-from flask import Blueprint, render_template, flash, redirect, url_for, request, abort
+from flask import Blueprint, render_template, flash, redirect, url_for, request, abort, session
 from flask_login import login_required, login_user, logout_user, current_user
 from ..forms import LoginForm, UserForm, UserEditForm, UserChangePasswordForm, AuthApiForm
 from ..models import User, AuthApi, LoginActivity
@@ -47,7 +47,8 @@ def login():
         # check if user exists on database
         user = User.query.filter_by(user_email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
-            login_user(user, remember=form.remember_me)
+            login_user(user, remember=form.remember_me.data)
+            session.permanent = True
 
             # record activity
             record_login_activity(user, 'login')
