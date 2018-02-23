@@ -79,7 +79,8 @@ class AuthApiForm(FlaskForm):
 class UserGroupForm(FlaskForm):
     internal = HiddenField()
     name = StringField(u'Nome', validators=[DataRequired(u'Informe o nome')])
-    type = StringField(u'Sigla (3 caracteres)', validators=[DataRequired(u'Informe a sigla')])
+    type = StringField(u'Sigla (3 caracteres)', validators=[DataRequired(u'Informe a sigla'),
+                                                            Length(min=1, max=3, message='Campo deve estar entre %(min)d e %(max)d caracteres')])
     description = StringField(u'Descrição')
 
 
