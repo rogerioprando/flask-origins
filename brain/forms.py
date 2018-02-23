@@ -18,13 +18,13 @@ class ClientForm(FlaskForm):
     address_zip = StringField(u'CEP')
     address_district = StringField(u'Bairro')
     address_city = StringField(u'Cidade')
-    address_state = SelectField(u'Estado', coerce=str)
+    address_state = SelectField(u'Estado', coerce=str, validators=[DataRequired(u'Selecione um estado')])
     date_start = DateField(u'Data de Início', format='%d/%m/%Y', validators=[DataRequired(u'Informe uma data de início')])
     date_end = DateField(u'Data de Término', format='%d/%m/%Y', validators=[DataRequired(u'Informe uma data de término')])
 
     def __init__(self, **kwargs):
         super(ClientForm, self).__init__(**kwargs)
-        self.address_state.choices = [(s.initials, s.state) for s in State.query.all()]
+        self.address_state.choices = [('', u'----- Selecionar -----')] + [(s.initials, s.state) for s in State.query.all()]
 
     def validate(self):
         rv = FlaskForm.validate(self)
@@ -92,11 +92,11 @@ class UserEditForm(FlaskForm):
     photo = FileField(u'Foto do Perfil', validators=[FileAllowed(f_images, 'Selecione apenas imagens')])
     company = StringField(u'Empresa')
     occupation = StringField(u'Cargo')
-    groups = SelectField(u'Grupo', coerce=int)
+    groups = SelectField(u'Grupo', coerce=int, validators=[DataRequired(u'Selecione um grupo')])
 
     def __init__(self, **kwargs):
         super(UserEditForm, self).__init__(**kwargs)
-        self.groups.choices = [(ug.id, ug.name) for ug in UserGroup.query.all()]
+        self.groups.choices = [(0, u'----- Selecionar -----')] + [(ug.id, ug.name) for ug in UserGroup.query.all()]
 
     """
     @staticmethod
