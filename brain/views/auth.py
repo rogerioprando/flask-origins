@@ -8,6 +8,7 @@ from ..application import db, f_images
 from ..util.library import generate_secret_key, s3_upload
 from user_agents import parse
 from datetime import datetime, timezone
+from ..util.enums import FlashMessagesCategory
 
 
 auth = Blueprint('auth', __name__)
@@ -15,30 +16,25 @@ auth = Blueprint('auth', __name__)
 
 @auth.errorhandler(404)
 def page_not_found(e):
-    error_type = 'error'
-    flash(e)
-    datetime.utcnow(timezone.utc)
-    return render_template('404.html', error_type=error_type), 404
+    flash(e, category=FlashMessagesCategory.ERROR.value)
+    return render_template('404.html'), 404
 
 
 @auth.errorhandler(500)
 def internal_server_error(e):
-    error_type = 'error'
-    flash(e)
-    return render_template('500.html', error_type=error_type), 500
+    flash(e, category=FlashMessagesCategory.ERROR.value)
+    return render_template('500.html'), 500
 
 
 @auth.errorhandler(Exception)
 def unhandled_exception(e):
-    error_type = 'error'
-    flash(e)
-    return render_template('500.html', error_type=error_type), 500
+    flash(e, category=FlashMessagesCategory.ERROR.value)
+    return render_template('500.html'), 500
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    error_type = 'info'
     next_url = request.args.get('next')
 
     if form.validate_on_submit():
@@ -47,20 +43,22 @@ def login():
         # check if user exists on database
         user = User.query.filter_by(user_email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            session.permanent = True
+            # validations over user
+            if not user.active:
+                flash(u'Usuário não encontra-se ativo', category=FlashMessagesCategory.INFO.value)
+            else:
+                login_user(user, remember=form.remember_me.data)
+                session.permanent = True
 
-            # record activity
-            record_login_activity(user, 'login')
+                # record activity
+                record_login_activity(user, 'login')
 
-            # redirect to dashboard after login
-            return redirect(next_url or url_for('website.index'))
+                # redirect to dashboard after login
+                return redirect(next_url or url_for('website.index'))
         else:
-            flash(u'E-mail ou senha incorretos.')
-            error_type = 'error'
+            flash(u'E-mail de usuário ou senha inválidos', category=FlashMessagesCategory.ERROR.value)
 
-    return render_template('auth/login.html',
-                           form=form, error_type=error_type, next=next_url)
+    return render_template('auth/login.html', form=form, next=next_url)
 
 
 @auth.route('/logout', methods=['GET'])
@@ -100,17 +98,13 @@ def record_login_activity(user, action):
 @login_required
 def list_client_secrets():
     clients = AuthApi.query.all()
-    error_type = 'info'
-
-    return render_template('manage/list-client-secret.html',
-                           clients=clients, error_type=error_type)
+    return render_template('manage/list-client-secret.html', clients=clients)
 
 
 @auth.route('/manage/client-secret/form', methods=['GET', 'POST'])
 @login_required
 def form_client_secret():
     form = AuthApiForm()
-    error_type = 'info'
     action = url_for('auth.form_client_secret')
 
     if form.validate_on_submit():
@@ -127,8 +121,7 @@ def form_client_secret():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-client-secret.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/form-client-secret.html', form=form, action=action)
 
 
 @auth.route('/manage/client-secret/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -136,7 +129,6 @@ def form_client_secret():
 def edit_client_secret(internal):
     client = AuthApi.query.filter_by(internal=internal).first()
     form = AuthApiForm(obj=client)
-    error_type = 'info'
     action = url_for('auth.edit_client_secret', internal=internal)
 
     if form.validate_on_submit():
@@ -149,45 +141,38 @@ def edit_client_secret(internal):
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-client-secret.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/form-client-secret.html', form=form, action=action)
 
 
 @auth.route('/manage/client-secret/delete', methods=['POST'])
 @login_required
 def delete_client_secret():
     clients = AuthApi.query.all()
-    error_type = 'info'
 
     try:
         client = AuthApi.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(client)
         db.session.commit()
 
-        flash(u'Registro deletado com sucesso.')
+        flash(u'Registro deletado com sucesso.', category=FlashMessagesCategory.INFO.value)
         return redirect(url_for('auth.list_client_secrets'))
     except Exception as e:
         abort(500, e)
 
-    return render_template('manage/list-client-secret.html',
-                           clients=clients, error_type=error_type)
+    return render_template('manage/list-client-secret.html', clients=clients)
 
 
 @auth.route('/manage/user', methods=['GET'])
 @login_required
 def list_users():
     users = User.query.all()
-    error_type = 'info'
-
-    return render_template('manage/list-user.html',
-                           users=users, error_type=error_type)
+    return render_template('manage/list-user.html', users=users)
 
 
 @auth.route('/manage/user/form', methods=['GET', 'POST'])
 @login_required
 def form_user():
     form = UserForm()
-    error_type = 'info'
     action = url_for('auth.form_user')
 
     if form.validate_on_submit():
@@ -226,8 +211,7 @@ def form_user():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-user.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/form-user.html', form=form, action=action)
 
 
 @auth.route('/manage/user/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -235,7 +219,6 @@ def form_user():
 def edit_user(internal):
     user = User.query.filter_by(internal=internal).first()
     form = UserEditForm(obj=user, groups=user.user_group_id)
-    error_type = 'info'
     action = url_for('auth.edit_user', internal=internal)
 
     file_name = user.file_name if user else ''
@@ -268,78 +251,66 @@ def edit_user(internal):
             abort(500, e)
 
     return render_template('manage/form-user.html',
-                           form=form, action=action,
-                           file_name=file_name, file_url=file_url,
-                           error_type=error_type)
+                           form=form, action=action, file_name=file_name, file_url=file_url)
 
 
 @auth.route('/manage/user/delete', methods=['POST'])
 @login_required
 def delete_user():
     users = User.query.all()
-    error_type = 'info'
 
     try:
         user = User.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(user)
         db.session.commit()
 
-        flash(u'Registro deletado com sucesso.')
+        flash(u'Registro deletado com sucesso.', category=FlashMessagesCategory.INFO.value)
         return redirect(url_for('auth.list_users'))
     except Exception as e:
         abort(500, e)
 
-    return render_template('manage/list-user.html',
-                           users=users, error_type=error_type)
+    return render_template('manage/list-user.html', users=users)
 
 
 @auth.route('/manage/user/profile', methods=['GET', 'POST'])
 @login_required
 def view_profile():
     form = UserChangePasswordForm()
-    error_type = 'info'
     action = url_for('auth.view_profile')
 
     if form.validate_on_submit():
-
         user = User.query.filter_by(internal=current_user.internal).first()
 
         # verificando se senha atual confere
         if not user.verify_password(form.current_password.data):
-            error_type = 'error'
-            flash(u'Senha atual informada está incorreta.')
-            return render_template('manage/view-profile.html',
-                                   form=form, action=action, error_type=error_type)
+            flash(u'Senha atual informada está incorreta.', category=FlashMessagesCategory.ERROR.value)
+            return render_template('manage/view-profile.html', form=form, action=action)
 
         user.password = form.user_password.data
 
         try:
             db.session.commit()
 
-            flash(u'Alteração de senha realizada com sucesso. A alteração ocorre apenas uma vez por sessão.')
+            flash(u'Alteração de senha realizada com sucesso. A alteração ocorre apenas uma vez por sessão.',
+                  category=FlashMessagesCategory.INFO.value)
             return redirect(url_for('auth.view_profile'))
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/view-profile.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/view-profile.html', form=form, action=action)
 
 
 @auth.route('/manage/group')
 @login_required
 def list_groups():
     groups = UserGroup.query.all()
-    error_type = 'info'
-
-    return render_template('manage/list-group.html',
-                           groups=groups, error_type=error_type)
+    return render_template('manage/list-group.html', groups=groups)
 
 
 @auth.route('/manage/group/form', methods=['GET', 'POST'])
 @login_required
 def form_group():
     form = UserGroupForm()
-    error_type = 'info'
     action = url_for('auth.form_group')
 
     if form.validate_on_submit():
@@ -356,8 +327,7 @@ def form_group():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-group.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/form-group.html', form=form, action=action)
 
 
 @auth.route('/manage/group/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -365,7 +335,6 @@ def form_group():
 def edit_group(internal):
     group = UserGroup.query.filter_by(internal=internal).first()
     form = UserGroupForm(obj=group)
-    error_type = 'info'
     action = url_for('auth.edit_group', internal=internal)
 
     if form.validate_on_submit():
@@ -379,25 +348,22 @@ def edit_group(internal):
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-group.html',
-                           form=form, action=action, error_type=error_type)
+    return render_template('manage/form-group.html', form=form, action=action)
 
 
 @auth.route('/manage/group/delete', methods=['POST'])
 @login_required
 def delete_group():
     groups = UserGroup.query.all()
-    error_type = 'info'
 
     try:
         group = UserGroup.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(group)
         db.session.commit()
 
-        flash(u'Registro deletado com sucesso.')
+        flash(u'Registro deletado com sucesso.', category=FlashMessagesCategory.INFO.value)
         return redirect(url_for('auth.list_groups'))
     except Exception as e:
         abort(500, e)
 
-    return render_template('manage/list-group.html',
-                           groups=groups, error_type=error_type)
+    return render_template('manage/list-group.html', groups=groups)
