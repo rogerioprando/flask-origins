@@ -33,75 +33,100 @@
                 </div>
                 <div {% if form.document_main.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
                     {{ form.document_main.label }}
-                    {{ form.document_main(class_='form-control') }}
+                    {{ form.document_main(id='document-main-cnpj', class_='form-control') }}
 
                     {% for error in form.document_main.errors %}
 					    <span class="help-block">{{ error }}</span>
                     {% endfor %}
                 </div>
-                <div {% if form.address_street.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_street.label }}
-                    {{ form.address_street(class_='form-control') }}
+                 <div class="row" id="datepicker-container">
+                    <div class="col-md-6">
+                        <div {% if form.date_start.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.date_start.label }}
 
-					{% for error in form.address_street.errors %}
-					    <span class="help-block">{{ error }}</span>
-					{% endfor %}
+                            <div class="input-group date">
+                                <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                {{ form.date_start(class_='form-control') }}
+                            </div>
+
+                            {% for error in form.date_start.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div {% if form.date_end.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.date_end.label }}
+
+                            <div class="input-group date">
+                                <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                {{ form.date_end(class_='form-control') }}
+                            </div>
+
+                            {% for error in form.date_end.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <div {% if form.address_complement.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_complement.label }}
-					{{ form.address_complement(class_='form-control') }}
 
-					{% for error in form.address_complement.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.address_zip.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_zip.label }}
-					{{ form.address_zip(class_='form-control') }}
+                <h4 style="background-color:#f7f7f7; font-size: 18px; font-weight: bold; text-align: center; padding: 7px 10px; margin-top: 0;">
+                    Endereço
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div {% if form.address_street.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_street.label }}
+                            {{ form.address_street(class_='form-control') }}
 
-					{% for error in form.address_zip.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.address_district.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_district.label }}
-					{{ form.address_district(class_='form-control') }}
+                            {% for error in form.address_street.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div {% if form.address_district.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_district.label }}
+                            {{ form.address_district(class_='form-control') }}
 
-					{% for error in form.address_district.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.address_city.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_city.label }}
-					{{ form.address_city(class_='form-control') }}
+                            {% for error in form.address_district.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div {% if form.address_zip.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_zip.label }}
+                            {{ form.address_zip(id='address-zip', class_='form-control') }}
 
-					{% for error in form.address_city.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.address_state.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.address_state.label }}
-					{{ form.address_state(class_='form-control') }}
+                            {% for error in form.address_zip.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-					{% for error in form.address_state.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.date_start.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.date_start.label }}
-					{{ form.date_start(class_='form-control') }}
+                    <div class="col-md-6">
+                        <div {% if form.address_complement.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_complement.label }}
+                            {{ form.address_complement(class_='form-control') }}
 
-					{% for error in form.date_start.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
-                </div>
-                <div {% if form.date_end.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
-                    {{ form.date_end.label }}
-					{{ form.date_end(class_='form-control') }}
+                            {% for error in form.address_complement.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div {% if form.address_city.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_city.label }}
+                            {{ form.address_city(class_='form-control') }}
 
-					{% for error in form.date_end.errors %}
-					    <span class="help-block">{{ error }}</span>
-                    {% endfor %}
+                            {% for error in form.address_city.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div {% if form.address_state.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                            {{ form.address_state.label }}
+                            {{ form.address_state(class_='form-control') }}
+
+                            {% for error in form.address_state.errors %}
+                                <span class="help-block">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
         	</div>
         	<div class="box-footer">

@@ -99,9 +99,9 @@ def edit_client(internal):
 @login_required
 def delete_client():
     clients = Client.query.all()
+    client = Client.query.filter_by(internal=request.form['recordId']).first()
 
     try:
-        client = Client.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(client)
         db.session.commit()
 

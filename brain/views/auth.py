@@ -148,9 +148,9 @@ def edit_client_secret(internal):
 @login_required
 def delete_client_secret():
     clients = AuthApi.query.all()
+    client = AuthApi.query.filter_by(internal=request.form['recordId']).first()
 
     try:
-        client = AuthApi.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(client)
         db.session.commit()
 
@@ -176,7 +176,6 @@ def form_user():
     action = url_for('auth.form_user')
 
     if form.validate_on_submit():
-
         # upload-file
         file = form.photo.data
         file_name = None
@@ -192,7 +191,7 @@ def form_user():
 
         user = User(active=form.active.data,
                     name=form.name.data,
-                    user_name=form.user_email.data,
+                    user_name=form.user_email.data.lower(),
                     user_email=form.user_email.data.lower(),
                     password=form.user_password.data,
                     user_group_id=form.groups.data,
@@ -225,7 +224,6 @@ def edit_user(internal):
     file_url = user.file_url if user else ''
 
     if form.validate_on_submit():
-
         # upload-file
         file = form.photo.data
 
@@ -258,9 +256,9 @@ def edit_user(internal):
 @login_required
 def delete_user():
     users = User.query.all()
+    user = User.query.filter_by(internal=request.form['recordId']).first()
 
     try:
-        user = User.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(user)
         db.session.commit()
 
@@ -355,9 +353,14 @@ def edit_group(internal):
 @login_required
 def delete_group():
     groups = UserGroup.query.all()
+    group = UserGroup.query.filter_by(internal=request.form['recordId']).first()
+
+    if group and group.users:
+        flash(u'Não é possível deletar o registro, pois está associado a um usuário.',
+              category=FlashMessagesCategory.INFO.value)
+        return redirect(url_for('auth.list_groups'))
 
     try:
-        group = UserGroup.query.filter_by(internal=request.form['recordId']).first()
         db.session.delete(group)
         db.session.commit()
 
