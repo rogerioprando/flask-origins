@@ -23,6 +23,7 @@ LOGGING_LEVEL = logging.DEBUG
 DEBUG = True
 SQLALCHEMY_ECHO = True
 USE_RELOADER = True
+JSON_SORT_KEYS = False
 
 RUN_HOST = '0.0.0.0'
 RUN_PORT = int(os.environ.get('PORT', 8000))

@@ -115,6 +115,8 @@ class UserEditForm(FlaskForm):
     photo = FileField(u'Foto do Perfil', validators=[FileAllowed(f_images, 'Selecione apenas imagens')])
     company = StringField(u'Empresa')
     occupation = StringField(u'Cargo')
+    phone = StringField(u'Telefone')
+    document_main = StringField(u'CPF')
     groups = SelectField(u'Grupo *', coerce=int, validators=[DataRequired(u'Selecione um grupo')])
 
     def __init__(self, **kwargs):

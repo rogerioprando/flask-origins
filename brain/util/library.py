@@ -1,10 +1,33 @@
 import os
 import base64
 import boto3
+import pytz
 
+from flask import request
 from boto3.s3.transfer import S3Transfer
 from uuid import uuid4
 from werkzeug.utils import secure_filename
+from flask_login import current_user
+from dateutil.tz import tzlocal
+from datetime import datetime
+
+
+def user_logged_in():
+    return current_user.name if current_user is None else 'REST-API'
+
+
+def current_timestamp_tz():
+    now = datetime.now().replace(tzinfo=tzlocal())
+    return now.astimezone(pytz.timezone('America/Sao_Paulo'))
+
+
+def current_request_ip():
+    if 'X-Forwarded-For' in request.headers:
+        remote_addr = request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1]
+    else:
+        remote_addr = request.remote_addr or 'untrackable'
+
+    return remote_addr
 
 
 def generate_secret_key():

@@ -1,5 +1,3 @@
-import uuid
-
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_required
 from ..application import db
@@ -40,7 +38,6 @@ def list_clients():
 @login_required
 def form_client():
     form = ClientForm()
-    action = url_for('parameter.form_client')
 
     if form.validate_on_submit():
         client = Client(name=form.name.data,
@@ -52,8 +49,7 @@ def form_client():
                         address_city=form.address_city.data,
                         address_state=form.address_state.data,
                         date_start=form.date_start.data,
-                        date_end=form.date_end.data,
-                        internal=form.internal.data or uuid.uuid4())
+                        date_end=form.date_end.data)
 
         try:
             db.session.add(client)
@@ -63,7 +59,7 @@ def form_client():
         except Exception as e:
             abort(500, e)
 
-    return render_template('parameter/form-client.html', form=form, action=action)
+    return render_template('parameter/form-client.html', form=form)
 
 
 @parameter.route('/parameter/client/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -71,7 +67,6 @@ def form_client():
 def edit_client(internal):
     client = Client.query.filter_by(internal=internal).first()
     form = ClientForm(obj=client)
-    action = url_for('parameter.edit_client', internal=internal)
 
     if form.validate_on_submit():
         client.name = form.name.data
@@ -92,13 +87,12 @@ def edit_client(internal):
         except Exception as e:
             abort(500, e)
 
-    return render_template('parameter/form-client.html', form=form, action=action)
+    return render_template('parameter/form-client.html', form=form)
 
 
 @parameter.route('/parameter/client/delete', methods=['POST'])
 @login_required
 def delete_client():
-    clients = Client.query.all()
     client = Client.query.filter_by(internal=request.form['recordId']).first()
 
     try:
@@ -109,5 +103,3 @@ def delete_client():
         return redirect(url_for('parameter.list_clients'))
     except Exception as e:
         abort(500, e)
-
-    return render_template('parameter/list-client.html', clients=clients)

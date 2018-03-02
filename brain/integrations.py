@@ -1,9 +1,36 @@
 from flask import jsonify
 from .models import User
+from .util.library import current_timestamp_tz
 
 
-def build_message(success, status_code, message):
-    return jsonify({'success': success, 'status_code': status_code, 'message': message})
+def build_message_rest(name, message, status_code, issue=None, issue_message=None):
+    """Build a JSON message for REST-API integration
+    
+    {
+        "name": "AUTHENTICATION_REQUIRED_ERROR",
+        "message": "Authentication Credentials is not valid",
+        "status_code": 401,
+        "timestamp": 1519932912012,
+        "issues": [
+            {
+                "issue": "InsufficientAuthenticationException",
+                "message": "Full authentication is required to access this resource"
+            }
+        ]
+    }
+    """
+
+    # wrap = {'success': success, 'status_code': status_code, 'message': message}
+    wrap = {'name': name,
+            'message': message,
+            'status_code': status_code,
+            'timestamp': current_timestamp_tz(),
+            'issues': [{
+                "issue": issue,
+                "message": issue_message
+            }]}
+
+    return jsonify(wrap)
 
 
 class BaseObjectAPI(object):

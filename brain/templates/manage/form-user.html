@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <form role="form" method="POST" action="{{ action }}" enctype="multipart/form-data">
+        <form role="form" method="POST" enctype="multipart/form-data">
         	<div class="box-body">
           		<div {% if form.groups.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
                     {{ form.groups.label }}
@@ -47,6 +47,22 @@
                     {% for error in form.user_email.errors %}
 					    <span class="help-block">{{ error }}</span>
                     {% endfor %}
+                </div>
+                <div {% if form.document_main.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                    {{ form.document_main.label }}
+                    {{ form.document_main(class_='form-control') }}
+
+					{% for error in form.document_main.errors %}
+					    <span class="help-block">{{ error }}</span>
+					{% endfor %}
+                </div>
+                <div {% if form.phone.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
+                    {{ form.phone.label }}
+                    {{ form.phone(class_='form-control') }}
+
+					{% for error in form.phone.errors %}
+					    <span class="help-block">{{ error }}</span>
+					{% endfor %}
                 </div>
                 <div {% if form.company.errors %} class="form-group has-error" {% else %} class="form-group" {% endif %}>
                     {{ form.company.label }}

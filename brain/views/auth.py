@@ -1,13 +1,10 @@
-import uuid
-
 from flask import Blueprint, render_template, flash, redirect, url_for, request, abort, session
 from flask_login import login_required, login_user, logout_user, current_user
 from ..forms import LoginForm, UserForm, UserEditForm, UserChangePasswordForm, AuthApiForm, UserGroupForm
 from ..models import User, AuthApi, LoginActivity, UserGroup
 from ..application import db, f_images
-from ..util.library import generate_secret_key, s3_upload
+from ..util.library import generate_secret_key, current_request_ip
 from user_agents import parse
-from datetime import datetime, timezone
 from ..util.enums import FlashMessagesCategory
 
 
@@ -66,7 +63,6 @@ def login():
 def logout():
     # record activity
     record_login_activity(current_user, 'logout')
-
     logout_user()
     return redirect('login')
 
@@ -74,13 +70,11 @@ def logout():
 def record_login_activity(user, action):
     """Login activities registry"""""
 
-    ip_address = request.remote_addr
+    ip_address = current_request_ip()
     ua_header = request.headers['USER_AGENT']
     ua_device = str(parse(ua_header))
 
-    activity = LoginActivity(internal=uuid.uuid4(),
-                             created=datetime.now(),
-                             user_id=user.id,
+    activity = LoginActivity(user_id=user.id,
                              action=action,
                              ip_address=ip_address,
                              ua_header=ua_header,
@@ -105,13 +99,10 @@ def list_client_secrets():
 @login_required
 def form_client_secret():
     form = AuthApiForm()
-    action = url_for('auth.form_client_secret')
 
     if form.validate_on_submit():
         client = AuthApi(client_secret=form.client_secret.data,
-                         api_key=generate_secret_key(),
-                         created=datetime.now(),
-                         internal=form.internal.data or uuid.uuid4())
+                         api_key=generate_secret_key())
 
         try:
             db.session.add(client)
@@ -121,7 +112,7 @@ def form_client_secret():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-client-secret.html', form=form, action=action)
+    return render_template('manage/form-client-secret.html', form=form)
 
 
 @auth.route('/manage/client-secret/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -129,7 +120,6 @@ def form_client_secret():
 def edit_client_secret(internal):
     client = AuthApi.query.filter_by(internal=internal).first()
     form = AuthApiForm(obj=client)
-    action = url_for('auth.edit_client_secret', internal=internal)
 
     if form.validate_on_submit():
         client.client_secret = form.client_secret.data
@@ -141,13 +131,12 @@ def edit_client_secret(internal):
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-client-secret.html', form=form, action=action)
+    return render_template('manage/form-client-secret.html', form=form)
 
 
 @auth.route('/manage/client-secret/delete', methods=['POST'])
 @login_required
 def delete_client_secret():
-    clients = AuthApi.query.all()
     client = AuthApi.query.filter_by(internal=request.form['recordId']).first()
 
     try:
@@ -158,8 +147,6 @@ def delete_client_secret():
         return redirect(url_for('auth.list_client_secrets'))
     except Exception as e:
         abort(500, e)
-
-    return render_template('manage/list-client-secret.html', clients=clients)
 
 
 @auth.route('/manage/user', methods=['GET'])
@@ -173,7 +160,6 @@ def list_users():
 @login_required
 def form_user():
     form = UserForm()
-    action = url_for('auth.form_user')
 
     if form.validate_on_submit():
         # upload-file
@@ -199,8 +185,8 @@ def form_user():
                     file_url=file_url,
                     company=form.company.data,
                     occupation=form.occupation.data,
-                    created=datetime.now(),
-                    internal=form.internal.data or uuid.uuid4())
+                    phone=form.phone.data,
+                    document_main=form.document_main.data)
 
         try:
             db.session.add(user)
@@ -210,7 +196,7 @@ def form_user():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-user.html', form=form, action=action)
+    return render_template('manage/form-user.html', form=form)
 
 
 @auth.route('/manage/user/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -218,7 +204,6 @@ def form_user():
 def edit_user(internal):
     user = User.query.filter_by(internal=internal).first()
     form = UserEditForm(obj=user, groups=user.user_group_id)
-    action = url_for('auth.edit_user', internal=internal)
 
     file_name = user.file_name if user else ''
     file_url = user.file_url if user else ''
@@ -240,6 +225,8 @@ def edit_user(internal):
         user.occupation = form.occupation.data
         user.active = form.active.data
         user.user_group_id = form.groups.data
+        user.phone = form.phone.data
+        user.document_main = form.document_main.data
 
         try:
             db.session.commit()
@@ -249,13 +236,12 @@ def edit_user(internal):
             abort(500, e)
 
     return render_template('manage/form-user.html',
-                           form=form, action=action, file_name=file_name, file_url=file_url)
+                           form=form, file_name=file_name, file_url=file_url)
 
 
 @auth.route('/manage/user/delete', methods=['POST'])
 @login_required
 def delete_user():
-    users = User.query.all()
     user = User.query.filter_by(internal=request.form['recordId']).first()
 
     try:
@@ -267,14 +253,11 @@ def delete_user():
     except Exception as e:
         abort(500, e)
 
-    return render_template('manage/list-user.html', users=users)
-
 
 @auth.route('/manage/user/profile', methods=['GET', 'POST'])
 @login_required
 def view_profile():
     form = UserChangePasswordForm()
-    action = url_for('auth.view_profile')
 
     if form.validate_on_submit():
         user = User.query.filter_by(internal=current_user.internal).first()
@@ -282,7 +265,7 @@ def view_profile():
         # verificando se senha atual confere
         if not user.verify_password(form.current_password.data):
             flash(u'Senha atual informada está incorreta.', category=FlashMessagesCategory.ERROR.value)
-            return render_template('manage/view-profile.html', form=form, action=action)
+            return render_template('manage/view-profile.html', form=form)
 
         user.password = form.user_password.data
 
@@ -295,7 +278,7 @@ def view_profile():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/view-profile.html', form=form, action=action)
+    return render_template('manage/view-profile.html', form=form)
 
 
 @auth.route('/manage/group')
@@ -309,13 +292,11 @@ def list_groups():
 @login_required
 def form_group():
     form = UserGroupForm()
-    action = url_for('auth.form_group')
 
     if form.validate_on_submit():
         group = UserGroup(name=form.name.data,
                           type=form.type.data,
-                          description=form.description.data,
-                          internal=form.internal.data or uuid.uuid4())
+                          description=form.description.data)
 
         try:
             db.session.add(group)
@@ -325,7 +306,7 @@ def form_group():
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-group.html', form=form, action=action)
+    return render_template('manage/form-group.html', form=form)
 
 
 @auth.route('/manage/group/<uuid:internal>/edit', methods=['GET', 'POST'])
@@ -333,7 +314,6 @@ def form_group():
 def edit_group(internal):
     group = UserGroup.query.filter_by(internal=internal).first()
     form = UserGroupForm(obj=group)
-    action = url_for('auth.edit_group', internal=internal)
 
     if form.validate_on_submit():
         group.name = form.name.data
@@ -346,13 +326,12 @@ def edit_group(internal):
         except Exception as e:
             abort(500, e)
 
-    return render_template('manage/form-group.html', form=form, action=action)
+    return render_template('manage/form-group.html', form=form)
 
 
 @auth.route('/manage/group/delete', methods=['POST'])
 @login_required
 def delete_group():
-    groups = UserGroup.query.all()
     group = UserGroup.query.filter_by(internal=request.form['recordId']).first()
 
     if group and group.users:
@@ -368,5 +347,3 @@ def delete_group():
         return redirect(url_for('auth.list_groups'))
     except Exception as e:
         abort(500, e)
-
-    return render_template('manage/list-group.html', groups=groups)
