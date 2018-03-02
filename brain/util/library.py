@@ -13,7 +13,7 @@ from datetime import datetime
 
 
 def user_logged_in():
-    return current_user.name if current_user is None else 'REST-API'
+    return current_user.name if current_user is not None else 'REST-API'
 
 
 def current_timestamp_tz():
